@@ -1,0 +1,24 @@
+{
+  "name": "docker-update-notifier-api",
+  "version": "1.0.0",
+  "description": "A docker update notifier",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon",
+    "tsc": "tsc"
+  },
+  "author": "Sebastian Loose",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.10.2",
+    "nodemon": "^2.0.13",
+    "prettier": "^2.4.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  }
+}
