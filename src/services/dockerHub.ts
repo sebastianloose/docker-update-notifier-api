@@ -1,4 +1,4 @@
-import { getRepository } from "../api/docker-hub-api";
+import { getRepository } from "../api/dockerHubApi";
 
 const doesRepositoryExist = async (
   organization: string,

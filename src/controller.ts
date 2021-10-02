@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { addSubscription } from "./services/db";
-import { doesRepositoryExist } from "./services/docker-hub";
+import { doesRepositoryExist } from "./services/dockerHub";
 
 const handleSubscription = async (req: Request, res: Response) => {
   try {
