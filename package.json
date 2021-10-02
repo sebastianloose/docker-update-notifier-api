@@ -11,6 +11,7 @@
   "author": "Sebastian Loose",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.22.0",
     "better-sqlite3": "^7.4.3",
     "express": "^4.17.1",
     "uuid": "^8.3.2"

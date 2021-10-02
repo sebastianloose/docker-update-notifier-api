@@ -1,12 +1,17 @@
 import { Request, Response } from "express";
-import { addSubscription } from "./db";
+import { addSubscription } from "./services/db";
+import { doesRepositoryExist } from "./services/docker-hub";
 
-const handleSubscription = (req: Request, res: Response) => {
+const handleSubscription = async (req: Request, res: Response) => {
   try {
     const { email, organization, repository } = formatBody(req.body);
 
     validateBody([email, organization, repository]);
     validateEmail(email);
+
+    if (!(await doesRepositoryExist(organization, repository))) {
+      throw new Error("Repository not found");
+    }
 
     addSubscription({
       email: email,
@@ -36,6 +41,7 @@ const formatBody = (body: { [key: string]: any }) => {
 };
 
 const validateBody = (body: string[]) => {
+  console.log(body);
   if (body.some((element) => !element)) {
     throw new Error("Body malformed");
   }

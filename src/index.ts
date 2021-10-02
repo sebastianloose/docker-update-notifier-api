@@ -1,6 +1,6 @@
 import express from "express";
 import router from "./routes";
-import { initDb } from "./db";
+import { initDb } from "./services/db";
 
 initDb();
 
