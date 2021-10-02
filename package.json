@@ -11,11 +11,15 @@
   "author": "Sebastian Loose",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "better-sqlite3": "^7.4.3",
+    "express": "^4.17.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.4.0",
     "@types/express": "^4.17.13",
     "@types/node": "^16.10.2",
+    "@types/uuid": "^8.3.1",
     "nodemon": "^2.0.13",
     "prettier": "^2.4.1",
     "ts-node": "^10.2.1",

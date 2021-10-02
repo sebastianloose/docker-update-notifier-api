@@ -1,0 +1,15 @@
+### GET latest release
+GET https://hub.docker.com/v2/repositories/pihole/pihole/tags/latest
+
+### GET latest release of an official image
+GET https://hub.docker.com/v2/repositories/library/mysql/tags/latest
+
+### Add update request
+POST http://localhost:5000/subscribe
+content-type: application/json
+
+{
+    "mail": "test@test.test",
+    "organization": "pihole",
+    "repository": "pihole"
+}
