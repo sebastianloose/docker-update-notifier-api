@@ -6,7 +6,7 @@ const db = new Database("main.db");
 
 const initDb = () => {
   db.exec(
-    "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, mail STRING NOT NULL UNIQUE, uuid STRING NOT NULL UNIQUE, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
+    "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email STRING NOT NULL UNIQUE, uuid STRING NOT NULL UNIQUE, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
   );
   db.exec(
     "CREATE TABLE IF NOT EXISTS subscription (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INT NOT NULL, repositoryId INT NOT NULL)"
@@ -16,13 +16,13 @@ const initDb = () => {
   );
 };
 
-const addSubscription = ({ mail, organization, repository }: Subscription) => {
-  if (!doesUserExist(mail)) {
-    db.prepare("INSERT INTO user (mail, uuid) VALUES (?, ?)").run(
-      mail,
+const addSubscription = ({ email, organization, repository }: Subscription) => {
+  if (!doesUserExist(email)) {
+    db.prepare("INSERT INTO user (email, uuid) VALUES (?, ?)").run(
+      email,
       uuidv4()
     );
-    console.log(`Created user ${mail}`);
+    console.log(`Created user ${email}`);
   }
 
   if (!doesRepositoryExist(organization, repository)) {
@@ -32,12 +32,12 @@ const addSubscription = ({ mail, organization, repository }: Subscription) => {
     console.log(`Created repository ${organization}/${repository}`);
   }
 
-  const userId = getUserId(mail);
+  const userId = getUserId(email);
   const repositoryId = getRepositoryId(organization, repository);
 
   if (doesSubscriptionExist(userId, repositoryId)) {
     console.log(
-      `Subscription does already exist - ${mail} ${organization}/${repository}`
+      `Subscription does already exist - ${email} ${organization}/${repository}`
     );
     return;
   }
@@ -45,13 +45,13 @@ const addSubscription = ({ mail, organization, repository }: Subscription) => {
   db.prepare(
     "INSERT INTO subscription (userId, repositoryId) VALUES (?, ?)"
   ).run(userId, repositoryId);
-  console.log(`Added subscription - ${mail} ${organization}/${repository}`);
+  console.log(`Added subscription - ${email} ${organization}/${repository}`);
 };
 
-const doesUserExist = (mail: string): boolean => {
+const doesUserExist = (email: string): boolean => {
   const { counter } = db
-    .prepare("SELECT COUNT(*) AS counter FROM user WHERE mail = ?")
-    .get(mail);
+    .prepare("SELECT COUNT(*) AS counter FROM user WHERE email = ?")
+    .get(email);
   return counter > 0;
 };
 
@@ -67,8 +67,8 @@ const doesRepositoryExist = (
   return counter > 0;
 };
 
-const getUserId = (mail: string): number => {
-  const { id } = db.prepare("SELECT id FROM user WHERE mail = ?").get(mail);
+const getUserId = (email: string): number => {
+  const { id } = db.prepare("SELECT id FROM user WHERE email = ?").get(email);
   return id;
 };
 
