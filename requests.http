@@ -9,7 +9,7 @@ POST http://localhost:5000/subscribe
 content-type: application/json
 
 {
-    "mail": "test@test.test",
+    "email": "test@test.test",
     "organization": "pihole",
     "repository": "pihole"
 }
