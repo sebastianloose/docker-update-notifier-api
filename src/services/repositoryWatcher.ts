@@ -7,8 +7,10 @@ import { isNewVersionAvailable } from "./dockerHub";
 import { sendUpdateAvailableMail } from "./mail";
 
 const initRepositoryWatcher = () => {
-  watchForNewVersions();
-  setInterval(() => watchForNewVersions(), 1 * 60000);
+  //watchForNewVersions();
+  const interval = parseInt(process.env["UPDATE_INTERVAL"] as string) || 30;
+  console.log(`Looking for new versions every ${interval} minutes`);
+  setInterval(() => watchForNewVersions(), interval * 60000);
 };
 
 const watchForNewVersions = async () => {
