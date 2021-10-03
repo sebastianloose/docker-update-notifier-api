@@ -3,3 +3,4 @@ dist
 main.db
 .env
 .DS_Store
+makefile

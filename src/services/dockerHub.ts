@@ -18,9 +18,11 @@ const isNewVersionAvailable = async ({
     return { id, newVersionAvailable: false };
   }
 
-  const lastCheck = new Date(new Date().getTime() + 5 * 60000);
+  const interval = parseInt(process.env["UPDATE_INTERVAL"] as string) || 30;
+
+  const lastCheck = new Date(new Date().getTime() - interval * 60000);
   const lastUpdate = new Date(repo["tag_last_pushed"]);
-  return { id, newVersionAvailable: lastCheck > lastUpdate };
+  return { id, newVersionAvailable: lastCheck < lastUpdate };
 };
 
 export { doesRepositoryExist, isNewVersionAvailable };

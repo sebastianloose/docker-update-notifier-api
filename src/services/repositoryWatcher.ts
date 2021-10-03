@@ -4,10 +4,10 @@ import {
   getRepositoryById,
 } from "./db";
 import { isNewVersionAvailable } from "./dockerHub";
-import { sendUpdateAvailableMail } from "./mail";
+import { sendUpdateAvailableMail } from "./email";
 
 const initRepositoryWatcher = () => {
-  //watchForNewVersions();
+  watchForNewVersions();
   const interval = parseInt(process.env["UPDATE_INTERVAL"] as string) || 30;
   console.log(`Looking for new versions every ${interval} minutes`);
   setInterval(() => watchForNewVersions(), interval * 60000);
@@ -28,6 +28,9 @@ const watchForNewVersions = async () => {
 
 const notifyUser = async (repositoryId: number) => {
   const repository = getRepositoryById(repositoryId);
+  console.log(
+    `New version available for ${repository.organization}/${repository.repository}`
+  );
   const emails = getAllEmailsListeningOnRepository(repositoryId);
 
   // await to prevent concurrent connections

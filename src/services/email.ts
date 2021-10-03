@@ -30,8 +30,7 @@ const sendUpdateAvailableMail = async (
     html: mailBody,
   };
 
-  const res = await transporter.sendMail(mailOptions);
-  console.log(res);
+  await transporter.sendMail(mailOptions);
 };
 
 export { sendUpdateAvailableMail };
