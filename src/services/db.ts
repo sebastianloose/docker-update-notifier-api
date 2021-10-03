@@ -48,6 +48,20 @@ const addSubscription = ({ email, organization, repository }: Subscription) => {
   console.log(`Added subscription - ${email} ${organization}/${repository}`);
 };
 
+const getAllRepositories = (): Repository[] => {
+  const res = db.prepare("SELECT * FROM repository").all();
+  return res;
+};
+
+const getAllEmailsListeningOnRepository = (repositoryId: number): string[] => {
+  const res = db
+    .prepare(
+      "SELECT email FROM user INNER JOIN subscription ON user.id=subscription.userId WHERE repositoryId = ?"
+    )
+    .all(repositoryId);
+  return res.map((element) => element.email);
+};
+
 const doesUserExist = (email: string): boolean => {
   const { counter } = db
     .prepare("SELECT COUNT(*) AS counter FROM user WHERE email = ?")
@@ -72,6 +86,11 @@ const getUserId = (email: string): number => {
   return id;
 };
 
+const getRepositoryById = (id: number): Repository => {
+  const res = db.prepare("SELECT * FROM repository WHERE id = ?").get(id);
+  return res;
+};
+
 const getRepositoryId = (organization: string, repository: string): number => {
   const { id } = db
     .prepare(
@@ -93,4 +112,10 @@ const doesSubscriptionExist = (
   return counter > 0;
 };
 
-export { initDb, addSubscription };
+export {
+  initDb,
+  addSubscription,
+  getAllRepositories,
+  getAllEmailsListeningOnRepository,
+  getRepositoryById,
+};

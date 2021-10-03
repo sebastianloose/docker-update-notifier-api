@@ -41,7 +41,6 @@ const formatBody = (body: { [key: string]: any }) => {
 };
 
 const validateBody = (body: string[]) => {
-  console.log(body);
   if (body.some((element) => !element)) {
     throw new Error("Body malformed");
   }
