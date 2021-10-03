@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import ejs from "ejs";
 
 const transporter = nodemailer.createTransport({
   host: process.env["SMTP_HOST"],
@@ -15,14 +16,18 @@ const transporter = nodemailer.createTransport({
 
 const sendUpdateAvailableMail = async (
   emails: string[],
-  repository: Repository
+  { organization, repository }: Repository
 ) => {
+  const mailBody = await ejs.renderFile(
+    __dirname + "/../templates/email/updateAvailable.html",
+    { organization, repository }
+  );
   const mailOptions = {
     from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
     to: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
     bcc: emails,
     subject: "Update available",
-    html: `Update available for ${repository.organization}/${repository.repository}`,
+    html: mailBody,
   };
 
   const res = await transporter.sendMail(mailOptions);

@@ -2,3 +2,4 @@ node_modules
 dist
 main.db
 .env
+.DS_Store
