@@ -19,7 +19,7 @@ const sendUpdateAvailableMail = async (
   { organization, repository }: Repository
 ) => {
   const mailBody = await ejs.renderFile(
-    __dirname + "/../templates/email/updateAvailable.html",
+    __dirname + "/../../templates/updateAvailableEmail.html",
     { organization, repository }
   );
   const mailOptions = {
