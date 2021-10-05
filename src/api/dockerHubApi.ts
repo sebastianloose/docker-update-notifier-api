@@ -2,7 +2,7 @@ import axios from "axios";
 
 const baseUrl = "https://hub.docker.com/v2";
 
-const getRepository = async (
+const getLatestTag = async (
   organization: string,
   repository: string
 ): Promise<{ [key: string]: any }> => {
@@ -16,4 +16,4 @@ const getRepository = async (
   }
 };
 
-export { getRepository };
+export { getLatestTag };

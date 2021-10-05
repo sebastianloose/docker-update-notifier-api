@@ -1,10 +1,10 @@
-import { getRepository } from "../api/dockerHubApi";
+import { getLatestTag } from "../api/dockerHubApi";
 
 const doesRepositoryExist = async (
   organization: string,
   repository: string
 ): Promise<boolean> => {
-  const res = await getRepository(organization, repository);
+  const res = await getLatestTag(organization, repository);
   return res["name"] === "latest";
 };
 
@@ -13,7 +13,7 @@ const isNewVersionAvailable = async ({
   organization,
   repository,
 }: Repository) => {
-  const repo = await getRepository(organization, repository);
+  const repo = await getLatestTag(organization, repository);
   if (repo["name"] !== "latest") {
     return { id, newVersionAvailable: false };
   }
