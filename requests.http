@@ -1,8 +1,12 @@
-### GET latest release
+### GET latest tag
 GET https://hub.docker.com/v2/repositories/pihole/pihole/tags/latest
 
-### GET latest release of an official image
+
+### GET latest tag of an official image
 GET https://hub.docker.com/v2/repositories/library/mysql/tags/latest
+
+### Get latest release
+GET https://hub.docker.com/v2/repositories/pihole/pihole/tags/?page_size=1&ordering=last_updated
 
 ### Add update request
 POST http://localhost:5000/subscribe
