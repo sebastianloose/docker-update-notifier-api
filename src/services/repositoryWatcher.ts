@@ -4,7 +4,7 @@ import {
   getRepositoryById,
 } from "./db";
 import { isNewVersionAvailable } from "./dockerHub";
-import { sendUpdateAvailableMail } from "./email";
+import { sendUpdateAvailableEmail } from "./email";
 
 const initRepositoryWatcher = () => {
   const interval = parseInt(process.env["UPDATE_INTERVAL"] as string) || 30;
@@ -35,7 +35,7 @@ const notifyUser = async (repositoryId: number) => {
   const emails = getAllEmailsListeningOnRepository(repositoryId);
 
   // await to prevent concurrent connections
-  await sendUpdateAvailableMail(emails, repository);
+  await sendUpdateAvailableEmail(emails, repository);
 };
 
 export { initRepositoryWatcher };

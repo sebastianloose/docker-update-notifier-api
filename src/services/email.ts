@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendUpdateAvailableMail = async (
+const sendUpdateAvailableEmail = async (
   emails: string[],
   { organization, repository }: Repository
 ) => {
@@ -33,4 +33,20 @@ const sendUpdateAvailableMail = async (
   await transporter.sendMail(mailOptions);
 };
 
-export { sendUpdateAvailableMail };
+const sendVerificationEmail = async (email: string, uuid: string) => {
+  const link = `https://sebastianloose.de/docker-update-notifier/verify/${uuid}`;
+  const mailBody = await ejs.renderFile(
+    __dirname + "/../../templates/verifyEmail.html",
+    { link }
+  );
+  const mailOptions = {
+    from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
+    to: email,
+    subject: "Verify your Email",
+    html: mailBody,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+export { sendUpdateAvailableEmail, sendVerificationEmail };

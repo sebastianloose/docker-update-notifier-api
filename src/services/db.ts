@@ -1,12 +1,13 @@
 import Database from "better-sqlite3";
 import { v4 as uuidv4 } from "uuid";
 import { Subscription } from "../types/subscriptionType";
+import { User } from "../types/userType";
 
 const db = new Database("main.db");
 
 const initDb = () => {
   db.exec(
-    "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email STRING NOT NULL UNIQUE, uuid STRING NOT NULL UNIQUE, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
+    "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email STRING NOT NULL UNIQUE, uuid STRING NOT NULL UNIQUE, verified INTEGER DEFAULT 0, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
   );
   db.exec(
     "CREATE TABLE IF NOT EXISTS subscription (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INT NOT NULL, repositoryId INT NOT NULL)"
@@ -48,6 +49,17 @@ const addSubscription = ({ email, organization, repository }: Subscription) => {
   console.log(`Added subscription - ${email} ${organization}/${repository}`);
 };
 
+const getUserByEmail = (email: string): User => {
+  const { id, uuid, verified, timestamp } = db
+    .prepare("SELECT * FROM user WHERE email = ?")
+    .get(email);
+  return { id, email, uuid, verified: verified == 1, timestamp };
+};
+
+const verifyUserEmail = (uuid: string) => {
+  db.prepare("UPDATE user SET verified = 1 WHERE uuid = ?").run(uuid);
+};
+
 const getAllRepositories = (): Repository[] => {
   const res = db.prepare("SELECT * FROM repository").all();
   return res;
@@ -56,7 +68,7 @@ const getAllRepositories = (): Repository[] => {
 const getAllEmailsListeningOnRepository = (repositoryId: number): string[] => {
   const res = db
     .prepare(
-      "SELECT email FROM user INNER JOIN subscription ON user.id=subscription.userId WHERE repositoryId = ?"
+      "SELECT email FROM user INNER JOIN subscription ON user.id=subscription.userId WHERE repositoryId = ? AND verified = 1"
     )
     .all(repositoryId);
   return res.map((element) => element.email);
@@ -118,4 +130,6 @@ export {
   getAllRepositories,
   getAllEmailsListeningOnRepository,
   getRepositoryById,
+  getUserByEmail,
+  verifyUserEmail,
 };

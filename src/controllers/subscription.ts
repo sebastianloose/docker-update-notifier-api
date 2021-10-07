@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { addSubscription } from "./services/db";
-import { doesRepositoryExist } from "./services/dockerHub";
+import { addSubscription, getUserByEmail } from "../services/db";
+import { doesRepositoryExist } from "../services/dockerHub";
+import { sendVerificationEmail } from "../services/email";
 
 const handleSubscription = async (req: Request, res: Response) => {
   try {
@@ -18,6 +19,14 @@ const handleSubscription = async (req: Request, res: Response) => {
       organization: organization,
       repository: repository,
     });
+
+    const user = getUserByEmail(email);
+
+    if (!user.verified) {
+      sendVerificationEmail(user.email, user.uuid);
+      res.send("Verification Email");
+      return;
+    }
 
     res.status(200).end();
   } catch (error: any) {
@@ -53,4 +62,4 @@ const validateEmail = (email: string) => {
   }
 };
 
-export { handleSubscription };
+export default handleSubscription;

@@ -1,8 +1,10 @@
 import express from "express";
-import { handleSubscription } from "./controller";
+import subscriptionController from "./controllers/subscription";
+import emailVerificationController from "./controllers/emailVerification";
 
 const router = express.Router();
 
-router.post("/subscribe", handleSubscription);
+router.post("/subscribe", subscriptionController);
+router.post("/verifyEmail", emailVerificationController);
 
 export default router;
