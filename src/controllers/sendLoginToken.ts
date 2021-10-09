@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getUserByEmail } from "../services/db";
 import { sendLoginEmail } from "../services/email";
-import { generateToken, verifyToken } from "../services/jwt";
+import { generateToken } from "../services/jwt";
 import { formatBodyToLowerCase } from "./helper/formater";
 import { validateBody, validateEmail } from "./helper/validater";
 
