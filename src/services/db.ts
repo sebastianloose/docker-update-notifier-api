@@ -49,11 +49,18 @@ const addSubscription = ({ email, organization, repository }: Subscription) => {
   console.log(`Added subscription - ${email} ${organization}/${repository}`);
 };
 
-const getUserByEmail = (email: string): User => {
-  const { id, uuid, verified, timestamp } = db
-    .prepare("SELECT * FROM user WHERE email = ?")
-    .get(email);
-  return { id, email, uuid, verified: verified == 1, timestamp };
+const getUserByEmail = (email: string): User | undefined => {
+  const res = db.prepare("SELECT * FROM user WHERE email = ?").get(email);
+  if (!res) {
+    return undefined;
+  }
+  return {
+    id: res.id,
+    email: res.email,
+    uuid: res.uuid,
+    verified: res.verified == 1,
+    timestamp: res.timestamp,
+  };
 };
 
 const verifyUserEmail = (uuid: string) => {

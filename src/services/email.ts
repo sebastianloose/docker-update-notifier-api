@@ -49,4 +49,19 @@ const sendVerificationEmail = async (email: string, uuid: string) => {
   await transporter.sendMail(mailOptions);
 };
 
-export { sendUpdateAvailableEmail, sendVerificationEmail };
+const sendLoginEmail = async (email: string, token: string) => {
+  const link = `https://sebastianloose.de/docker-update-notifier/login/?token=${token}`;
+  const mailBody = await ejs.renderFile(
+    __dirname + "/../../templates/loginEmail.html",
+    { link }
+  );
+  const mailOptions = {
+    from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
+    to: email,
+    subject: "Your Login Link",
+    html: mailBody,
+  };
+  await transporter.sendMail(mailOptions);
+};
+
+export { sendUpdateAvailableEmail, sendVerificationEmail, sendLoginEmail };

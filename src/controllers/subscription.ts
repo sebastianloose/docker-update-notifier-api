@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { addSubscription, getUserByEmail } from "../services/db";
 import { doesRepositoryExist } from "../services/dockerHub";
 import { sendVerificationEmail } from "../services/email";
+import { formatBodyToLowerCase } from "./helper/formater";
+import { validateBody, validateEmail } from "./helper/validater";
 
 const handleSubscription = async (req: Request, res: Response) => {
   try {
-    const { email, organization, repository } = formatBody(req.body);
+    const { email, organization, repository } = formatBodyToLowerCase(req.body);
 
     validateBody([email, organization, repository]);
     validateEmail(email);
@@ -22,8 +24,8 @@ const handleSubscription = async (req: Request, res: Response) => {
 
     const user = getUserByEmail(email);
 
-    if (!user.verified) {
-      sendVerificationEmail(user.email, user.uuid);
+    if (!user!.verified) {
+      sendVerificationEmail(user!.email, user!.uuid);
       res.send("Verification Email");
       return;
     }
@@ -35,30 +37,6 @@ const handleSubscription = async (req: Request, res: Response) => {
       return;
     }
     res.status(500).end();
-  }
-};
-
-const formatBody = (body: { [key: string]: any }) => {
-  const formatedBody: { [key: string]: any } = {};
-  for (let [key, value] of Object.entries(body)) {
-    if (typeof value === "string") {
-      value = value.trim().toLowerCase();
-    }
-    formatedBody[key] = value;
-  }
-  return formatedBody;
-};
-
-const validateBody = (body: string[]) => {
-  if (body.some((element) => !element)) {
-    throw new Error("Body malformed");
-  }
-};
-
-const validateEmail = (email: string) => {
-  const regex = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-  if (!regex.test(email)) {
-    throw new Error("Email malformed");
   }
 };
 
