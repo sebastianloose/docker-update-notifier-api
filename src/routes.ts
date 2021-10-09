@@ -5,6 +5,6 @@ import emailVerificationController from "./controllers/emailVerification";
 const router = express.Router();
 
 router.post("/subscribe", subscriptionController);
-router.post("/verifyEmail", emailVerificationController);
+router.get("/verify/:uuid", emailVerificationController);
 
 export default router;

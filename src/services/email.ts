@@ -34,7 +34,7 @@ const sendUpdateAvailableEmail = async (
 };
 
 const sendVerificationEmail = async (email: string, uuid: string) => {
-  const link = `https://sebastianloose.de/docker-update-notifier/verify/${uuid}`;
+  const link = `https://api.docker-notifier.sebastianloose.de/verify/${uuid}`;
   const mailBody = await ejs.renderFile(
     __dirname + "/../../templates/verifyEmail.html",
     { link }

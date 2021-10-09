@@ -2,15 +2,16 @@ import { Request, Response } from "express";
 import { verifyUserEmail } from "../services/db";
 
 const handleEmailVerification = (req: Request, res: Response) => {
-  const { uuid } = req.body;
+  const { uuid } = req.params;
 
   if (!uuid) {
     res.status(400).end();
     return;
   }
 
+  console.log(`Verifying UUID:${uuid}`);
   verifyUserEmail(uuid);
-  res.status(200).end();
+  res.redirect("https://sebastianloose.de/docker-update-notifier/verified");
 };
 
 export default handleEmailVerification;
