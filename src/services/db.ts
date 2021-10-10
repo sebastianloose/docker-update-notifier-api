@@ -1,5 +1,6 @@
 import Database from "better-sqlite3";
 import { v4 as uuidv4 } from "uuid";
+import { SubscriptionRequest } from "../types/subscriptionRequestType";
 import { Subscription } from "../types/subscriptionType";
 import { User } from "../types/userType";
 
@@ -10,14 +11,18 @@ const initDb = () => {
     "CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email STRING NOT NULL UNIQUE, uuid STRING NOT NULL UNIQUE, verified INTEGER DEFAULT 0, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
   );
   db.exec(
-    "CREATE TABLE IF NOT EXISTS subscription (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INT NOT NULL, repositoryId INT NOT NULL)"
+    "CREATE TABLE IF NOT EXISTS subscription (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER NOT NULL, repositoryId INTEGER NOT NULL, active INTEGER DEFAULT 1)"
   );
   db.exec(
     "CREATE TABLE IF NOT EXISTS repository (id INTEGER PRIMARY KEY AUTOINCREMENT, organization STRING NOT NULL, repository STRING NOT NULL)"
   );
 };
 
-const addSubscription = ({ email, organization, repository }: Subscription) => {
+const addSubscription = ({
+  email,
+  organization,
+  repository,
+}: SubscriptionRequest) => {
   if (!doesUserExist(email)) {
     db.prepare("INSERT INTO user (email, uuid) VALUES (?, ?)").run(
       email,
@@ -61,6 +66,36 @@ const getUserByEmail = (email: string): User | undefined => {
     verified: res.verified == 1,
     timestamp: res.timestamp,
   };
+};
+
+const getUserByUuid = (uuid: string): User | undefined => {
+  const res = db.prepare("SELECT * FROM user WHERE uuid = ?").get(uuid);
+  if (!res) {
+    return undefined;
+  }
+  return {
+    id: res.id,
+    email: res.email,
+    uuid: res.uuid,
+    verified: res.verified == 1,
+    timestamp: res.timestamp,
+  };
+};
+
+const getSubscriptionsByEmail = (email: string): Subscription[] => {
+  const userId = getUserId(email);
+  const res = db
+    .prepare(
+      "SELECT organization, repository, active FROM repository INNER JOIN subscription ON repository.id=subscription.repositoryId WHERE subscription.userId = ?"
+    )
+    .all(userId);
+  if (!res) {
+    return [];
+  }
+  return res.map((subscription) => {
+    subscription.active = subscription.active === 1;
+    return subscription;
+  });
 };
 
 const verifyUserEmail = (uuid: string) => {
@@ -138,5 +173,7 @@ export {
   getAllEmailsListeningOnRepository,
   getRepositoryById,
   getUserByEmail,
+  getUserByUuid,
   verifyUserEmail,
+  getSubscriptionsByEmail,
 };

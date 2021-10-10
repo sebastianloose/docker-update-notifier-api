@@ -1,5 +1,5 @@
 export interface Subscription {
-  email: string;
-  organization: string;
   repository: string;
+  organization: string;
+  active: boolean;
 }

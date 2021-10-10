@@ -1,12 +1,14 @@
 import express from "express";
-import subscriptionController from "./controllers/subscription";
+import createSubscriptionController from "./controllers/createSubscription";
+import getSubscriptionsController from "./controllers/getSubscriptions";
 import emailVerificationController from "./controllers/emailVerification";
 import sendLoginTokenController from "./controllers/sendLoginToken";
 
 const router = express.Router();
 
-router.post("/subscribe", subscriptionController);
+router.post("/subscribe", createSubscriptionController);
 router.get("/verify/:uuid", emailVerificationController);
 router.post("/sendLoginToken", sendLoginTokenController);
+router.post("/subscriptions", getSubscriptionsController);
 
 export default router;
