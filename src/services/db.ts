@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import { v4 as uuidv4 } from "uuid";
 import { SubscriptionRequest } from "../types/subscriptionRequestType";
 import { Subscription } from "../types/subscriptionType";
+import { SubscriptionUpdateState } from "../types/subscriptionUpdateStateType";
 import { User } from "../types/userType";
 
 const db = new Database("main.db");
@@ -98,6 +99,39 @@ const getSubscriptionsByEmail = (email: string): Subscription[] => {
   });
 };
 
+const updateSubscriptionState = (
+  state: SubscriptionUpdateState,
+  email: string
+) => {
+  const userId = getUserId(email);
+  const repositoryId = getRepositoryId(state.organization, state.repository);
+  db.prepare(
+    "UPDATE subscription SET active = ? WHERE userId = ? AND repositoryId = ?"
+  ).run(state.active ? 1 : 0, userId, repositoryId);
+};
+
+const deleteSubscription = (
+  organization: string,
+  repository: string,
+  email: string
+) => {
+  const userId = getUserId(email);
+  const repositoryId = getRepositoryId(organization, repository);
+
+  db.prepare(
+    "DELETE FROM subscription WHERE userId = ? AND repositoryId = ?"
+  ).run(userId, repositoryId);
+
+  const { counter } = db
+    .prepare(
+      "SELECT COUNT(*) AS counter FROM subscription WHERE repositoryId = ?"
+    )
+    .get(repositoryId);
+  if (counter === 0) {
+    db.prepare("DELETE FROM repository WHERE id = ?").run(repositoryId);
+  }
+};
+
 const verifyUserEmail = (uuid: string) => {
   db.prepare("UPDATE user SET verified = 1 WHERE uuid = ?").run(uuid);
 };
@@ -110,7 +144,7 @@ const getAllRepositories = (): Repository[] => {
 const getAllEmailsListeningOnRepository = (repositoryId: number): string[] => {
   const res = db
     .prepare(
-      "SELECT email FROM user INNER JOIN subscription ON user.id=subscription.userId WHERE repositoryId = ? AND verified = 1"
+      "SELECT email FROM user INNER JOIN subscription ON user.id=subscription.userId WHERE repositoryId = ? AND verified = 1 AND active = 1"
     )
     .all(repositoryId);
   return res.map((element) => element.email);
@@ -176,4 +210,6 @@ export {
   getUserByUuid,
   verifyUserEmail,
   getSubscriptionsByEmail,
+  updateSubscriptionState,
+  deleteSubscription,
 };
