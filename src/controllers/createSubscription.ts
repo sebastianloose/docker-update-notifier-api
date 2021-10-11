@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
-import { addSubscription, getUserByEmail } from "../services/db";
+import { addSubscription, getUserByEmail, getUserByUuid } from "../services/db";
 import { doesRepositoryExist } from "../services/dockerHub";
 import { sendVerificationEmail } from "../services/email";
+import { verifyToken } from "../services/jwt";
 import { formatBodyToLowerCase } from "./helper/formater";
 import { validateBody, validateEmail } from "./helper/validater";
 
-const handleSubscription = async (req: Request, res: Response) => {
+const createSubscriptionEmailController = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { email, organization, repository } = formatBodyToLowerCase(req.body);
 
@@ -32,12 +36,49 @@ const handleSubscription = async (req: Request, res: Response) => {
 
     res.status(200).end();
   } catch (error: any) {
-    if (error.message) {
+    if (error.message == "Repository not found") {
       res.status(400).send(error.message);
       return;
     }
-    res.status(500).end();
+    res.status(400).end();
   }
 };
 
-export default handleSubscription;
+const createSubscriptionTokenController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { token } = req.body;
+    const { organization, repository } = formatBodyToLowerCase(req.body);
+
+    validateBody([token, organization, repository]);
+
+    const uuid = verifyToken(token);
+    const user = getUserByUuid(uuid);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!(await doesRepositoryExist(organization, repository))) {
+      throw new Error("Repository not found");
+    }
+
+    addSubscription({
+      email: user.email,
+      organization: organization,
+      repository: repository,
+    });
+
+    res.status(200).end();
+  } catch (error: any) {
+    if (error.message == "Repository not found") {
+      res.status(400).send(error.message);
+      return;
+    }
+    res.status(400).end();
+  }
+};
+
+export { createSubscriptionEmailController, createSubscriptionTokenController };

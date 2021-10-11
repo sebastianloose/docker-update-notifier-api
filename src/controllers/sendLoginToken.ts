@@ -26,11 +26,7 @@ const handleSendLoginToken = (req: Request, res: Response) => {
 
     res.status(200).end();
   } catch (error: any) {
-    if (error.message) {
-      res.status(400).send(error.message);
-      return;
-    }
-    res.sendStatus(500).end();
+    res.sendStatus(400).end();
   }
 };
 

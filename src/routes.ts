@@ -1,5 +1,8 @@
 import express from "express";
-import createSubscriptionController from "./controllers/createSubscription";
+import {
+  createSubscriptionEmailController,
+  createSubscriptionTokenController,
+} from "./controllers/createSubscription";
 import getSubscriptionsController from "./controllers/getSubscriptions";
 import emailVerificationController from "./controllers/emailVerification";
 import sendLoginTokenController from "./controllers/sendLoginToken";
@@ -8,7 +11,8 @@ import deleteSubscriptionController from "./controllers/deleteSubscription";
 
 const router = express.Router();
 
-router.post("/subscribe", createSubscriptionController);
+router.post("/subscribeByEmail", createSubscriptionEmailController);
+router.post("/subscribeByToken", createSubscriptionTokenController);
 router.get("/verify/:uuid", emailVerificationController);
 router.post("/sendLoginToken", sendLoginTokenController);
 router.post("/subscriptions", getSubscriptionsController);
