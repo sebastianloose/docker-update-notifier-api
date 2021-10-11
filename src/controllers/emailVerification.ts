@@ -11,7 +11,7 @@ const handleEmailVerification = (req: Request, res: Response) => {
 
   console.log(`Verifying UUID:${uuid}`);
   verifyUserEmail(uuid);
-  res.redirect("https://sebastianloose.de/docker-update-notifier/verified");
+  res.redirect("https://sebastianloose.de/docker-update-notifier/?verified=1");
 };
 
 export default handleEmailVerification;
