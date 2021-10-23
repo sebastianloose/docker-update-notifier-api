@@ -14,14 +14,34 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const getEmailBody = async (
+  fileName: String,
+  params: {
+    [key: string]: any;
+  }
+) => {
+  const content = await ejs.renderFile(
+    __dirname + `/../../templates/${fileName}`,
+    params
+  );
+  console.log(content);
+  const body = await ejs.renderFile(
+    __dirname + `/../../templates/emailFrame.html`,
+    {
+      content,
+    }
+  );
+  return body;
+};
+
 const sendUpdateAvailableEmail = async (
   emails: string[],
   { organization, repository }: Repository
 ) => {
-  const mailBody = await ejs.renderFile(
-    __dirname + "/../../templates/updateAvailableEmail.html",
-    { organization, repository }
-  );
+  const mailBody = await getEmailBody("updateAvailableEmail.html", {
+    organization,
+    repository,
+  });
   const mailOptions = {
     from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
     to: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
@@ -35,10 +55,7 @@ const sendUpdateAvailableEmail = async (
 
 const sendVerificationEmail = async (email: string, uuid: string) => {
   const link = `https://api.docker-notifier.sebastianloose.de/verify/${uuid}`;
-  const mailBody = await ejs.renderFile(
-    __dirname + "/../../templates/verifyEmail.html",
-    { link }
-  );
+  const mailBody = await getEmailBody("verifyEmail.html", { link });
   const mailOptions = {
     from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
     to: email,
@@ -51,10 +68,7 @@ const sendVerificationEmail = async (email: string, uuid: string) => {
 
 const sendLoginEmail = async (email: string, token: string) => {
   const link = `https://sebastianloose.de/docker-update-notifier/login/?token=${token}`;
-  const mailBody = await ejs.renderFile(
-    __dirname + "/../../templates/loginEmail.html",
-    { link }
-  );
+  const mailBody = await getEmailBody("loginEmail.html", { link });
   const mailOptions = {
     from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
     to: email,
