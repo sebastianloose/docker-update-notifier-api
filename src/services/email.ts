@@ -24,7 +24,6 @@ const getEmailBody = async (
     __dirname + `/../../templates/${fileName}`,
     params
   );
-  console.log(content);
   const body = await ejs.renderFile(
     __dirname + `/../../templates/emailFrame.html`,
     {
@@ -39,8 +38,8 @@ const sendUpdateAvailableEmail = async (
   { organization, repository }: Repository
 ) => {
   const mailBody = await getEmailBody("updateAvailableEmail.html", {
-    organization,
-    repository,
+    name: `${organization}/${repository}`,
+    link: `https://hub.docker.com/r/${organization}/${repository}`,
   });
   const mailOptions = {
     from: `"Docker Update Notifier" <${process.env["SMTP_EMAIL_ADDRESS"]}>`,
