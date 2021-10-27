@@ -6,6 +6,13 @@ import { verifyToken } from "../services/jwt";
 import { formatBodyToLowerCase } from "./helper/formater";
 import { validateBody, validateEmail } from "./helper/validater";
 
+const errorMessages = [
+  "Repository not found",
+  "User does already exist",
+  "Email is not verified",
+  "User not found",
+];
+
 const createSubscriptionEmailController = async (
   req: Request,
   res: Response
@@ -15,6 +22,10 @@ const createSubscriptionEmailController = async (
 
     validateBody([email, organization, repository]);
     validateEmail(email);
+
+    if (getUserByEmail(email)) {
+      throw new Error("User does already exist");
+    }
 
     if (!(await doesRepositoryExist(organization, repository))) {
       throw new Error("Repository not found");
@@ -30,17 +41,17 @@ const createSubscriptionEmailController = async (
 
     if (!user!.verified) {
       sendVerificationEmail(user!.email, user!.uuid);
-      res.send("Verification Email");
+      res.send("Email is not verified");
       return;
     }
 
     res.status(200).end();
   } catch (error: any) {
-    if (error.message == "Repository not found") {
+    if (errorMessages.includes(error.message)) {
       res.status(400).send(error.message);
       return;
     }
-    res.status(400).end();
+    res.status(500).end();
   }
 };
 
@@ -73,11 +84,11 @@ const createSubscriptionTokenController = async (
 
     res.status(200).end();
   } catch (error: any) {
-    if (error.message == "Repository not found") {
+    if (errorMessages.includes(error.message)) {
       res.status(400).send(error.message);
       return;
     }
-    res.status(400).end();
+    res.status(500).end();
   }
 };
 
